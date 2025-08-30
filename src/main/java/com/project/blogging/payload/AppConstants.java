@@ -10,9 +10,11 @@ public class AppConstants {
 	
 	public static final String SORT_BY_DIR="asc";
 	
-	public static final Integer NORMAL_USER = 2;
+	public static final Integer NORMAL_USER = 102;
 
-	public static final Integer ADMIN_USER = 1;
+	public static final Integer ADMIN_USER = 52;
+	
+	public static final String AUTHORIZATION_HEADER = "Authorization";
 	
 	
 	

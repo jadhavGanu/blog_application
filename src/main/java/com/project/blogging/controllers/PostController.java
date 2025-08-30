@@ -31,7 +31,7 @@ import com.project.blogging.services.PostService;
 import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/posts")
 public class PostController {
 
 	@Autowired
@@ -75,14 +75,14 @@ public class PostController {
 	}
 
 	// get Post by postId
-	@GetMapping("/posts/{postId}")
+	@GetMapping("/{postId}")
 	public ResponseEntity<PostDto> getSinglePost(@PathVariable Integer postId) {
 		PostDto postDto = this.postService.getPostById(postId);
 		return new ResponseEntity<>(postDto, HttpStatus.OK);
 	}
 
 	// get All posts
-	@GetMapping("/posts")
+	@GetMapping("/")
 	public ResponseEntity<PostResponse> getAllPosts(
 			@RequestParam(value = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
 			@RequestParam(value = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
@@ -93,41 +93,41 @@ public class PostController {
 	}
 
 	// delete post
-	@DeleteMapping("/posts/{postId}")
+	@DeleteMapping("/{postId}")
 	public ResponseEntity<ApiResponse> deletePost(@PathVariable Integer postId) {
 		this.postService.deletePost(postId);
 		return new ResponseEntity<>(new ApiResponse("post deleted successfully...", true), HttpStatus.OK);
 	}
 
 	// update post
-	@PutMapping("/posts/{postId}")
+	@PutMapping("/{postId}")
 	public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto, @PathVariable Integer postId) {
 		PostDto updatedPost = this.postService.updatePost(postDto, postId);
 		return new ResponseEntity<>(updatedPost, HttpStatus.OK);
 	}
 	
 	// search posts by keyword
-	@GetMapping("post/search/{keyword}")
+	@GetMapping("/search/{keyword}")
 	public ResponseEntity<List<PostDto>> searchPostByKeyword(@PathVariable("keyword") String keyword) {
 
 		List<PostDto> postDtos = this.postService.searchPostsByKeyword(keyword);
 		return new ResponseEntity<>(postDtos, HttpStatus.OK);
 	}
 	
-	@PostMapping("/post/image/upload/{postId}")
+	@PostMapping("/image/upload/{postId}")
 	public ResponseEntity<PostDto> uploadFile(@RequestParam(value = "image") MultipartFile image,
-			@PathVariable("postId") Integer pathId) throws IOException {
+			@PathVariable("postId") Integer postId) throws IOException {
 
-		PostDto postDto = this.postService.getPostById(pathId);
-		String fileName = fileName = this.fileService.uploadImage(path, image);
+		PostDto postDto = this.postService.getPostById(postId);
+		String fileName = this.fileService.uploadImage(path, image);
 		postDto.setImageName(fileName);
-		PostDto updatedPost = this.postService.updatePost(postDto, pathId);
+		PostDto updatedPost = this.postService.updatePost(postDto, postId);
 
 		return new ResponseEntity<>(updatedPost, HttpStatus.OK);
 	}
 
 	// method to serve file
-	@GetMapping(value = "/post/image/{imageName}", produces = MediaType.IMAGE_JPEG_VALUE)
+	@GetMapping(value = "/image/{imageName}", produces = MediaType.IMAGE_JPEG_VALUE)
 	public void downloadFile(@PathVariable("imageName") String imageName, HttpServletResponse response)
 			throws IOException {
 		InputStream resource = this.fileService.getResorce(path, imageName);

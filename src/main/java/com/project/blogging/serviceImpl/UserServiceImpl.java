@@ -25,10 +25,10 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	ModelMapper modelMapper;
-	
+
 	@Autowired
 	PasswordEncoder passwordEncoder;
-	
+
 	@Autowired
 	private RoleRepo roleRepo;
 
@@ -38,6 +38,19 @@ public class UserServiceImpl implements UserService {
 //		User user = this.dtoToUser(userDto);
 
 		User user = this.modelMapper.map(userDto, User.class);
+
+		user.setPassword(this.passwordEncoder.encode(userDto.getPassword()));
+		user.setIsAdmin(userDto.getIsAdmin());
+
+		Role role = null;
+
+		if (user.getIsAdmin()) {
+			role = this.roleRepo.findById(AppConstants.ADMIN_USER).get();
+		} else {
+			role = this.roleRepo.findById(AppConstants.NORMAL_USER).get();
+		}
+
+		user.getRoles().add(role);
 
 		User saveUser = this.userRepo.save(user);
 
@@ -55,8 +68,20 @@ public class UserServiceImpl implements UserService {
 
 		user.setName(userDto.getName());
 		user.setEmail(userDto.getEmail());
-		user.setPassword(userDto.getPassword());
+		user.setPassword(this.passwordEncoder.encode(userDto.getPassword()));
 		user.setAbout(userDto.getAbout());
+		
+		user.setIsAdmin(userDto.getIsAdmin());
+
+		Role role = null;
+
+		if (user.getIsAdmin()) {
+			role = this.roleRepo.findById(AppConstants.ADMIN_USER).get();
+		} else {
+			role = this.roleRepo.findById(AppConstants.NORMAL_USER).get();
+		}
+
+		user.getRoles().add(role);
 
 		User updateUser = this.userRepo.save(user);
 
@@ -71,6 +96,8 @@ public class UserServiceImpl implements UserService {
 	public UserDto getUserById(Integer userId) {
 		User user = this.userRepo.findById(userId)
 				.orElseThrow(() -> new ResourceNotFoundException("user", "id", userId));
+		
+		System.out.println(user.getAuthorities());
 
 //		UserDto getUserDto = this.userToDto(user);
 
@@ -94,17 +121,28 @@ public class UserServiceImpl implements UserService {
 	public void deleteUser(Integer userId) {
 		User user = this.userRepo.findById(userId)
 				.orElseThrow(() -> new ResourceNotFoundException("user", "id", userId));
+		user.getRoles().clear();
 		this.userRepo.delete(user);
 	}
 
 	@Override
 	public UserDto registerNewUser(UserDto userDto) {
-		User user=this.modelMapper.map(userDto, User.class);
+		
+		User user = this.modelMapper.map(userDto, User.class);
 		// we have encoded password
 		user.setPassword(this.passwordEncoder.encode(userDto.getPassword()));
-		
-		// roles
-		Role role = this.roleRepo.findById(AppConstants.NORMAL_USER).get();
+
+//		user.setIsAdmin(userDto.getIsAdmin());
+
+		Role role = null;
+
+		if (user.getIsAdmin()) {
+			role = this.roleRepo.findById(AppConstants.ADMIN_USER).get();
+		} else {
+			role = this.roleRepo.findById(AppConstants.NORMAL_USER).get();
+			
+			
+		}
 
 		user.getRoles().add(role);
 
@@ -126,6 +164,7 @@ public class UserServiceImpl implements UserService {
 //	}
 //
 //	public UserDto userToDto(User user) {
+
 //		UserDto userDto = new UserDto();
 //
 //		userDto.setId(user.getId());

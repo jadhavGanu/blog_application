@@ -19,7 +19,7 @@ import com.project.blogging.payload.CommentDto;
 import com.project.blogging.services.CommentService;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/comments")
 public class CommentController {
 	
 	@Autowired
@@ -46,21 +46,21 @@ public class CommentController {
 	}
 	
 	// get comment
-	@GetMapping("/comment/{commentId}")
+	@GetMapping("/{commentId}")
 	public ResponseEntity<CommentDto> getComment(@PathVariable("commentId") Integer commentId) {
 		CommentDto commentDto = this.commentService.getCommentById(commentId);
 		return new ResponseEntity<>(commentDto, HttpStatus.OK);
 	}
 	
 	// get all comments
-	@GetMapping("/comment/comments")
+	@GetMapping("/")
 	public ResponseEntity<List<CommentDto>> getAllComments() {
 		List<CommentDto> listOfComments = this.commentService.getAllComment();
 		return new ResponseEntity<>(listOfComments, HttpStatus.OK);
 	}
 	
 	// updated comment
-	@PutMapping("/comment/{commentId}")
+	@PutMapping("/{commentId}")
 	public ResponseEntity<CommentDto> updatedComment(@RequestBody CommentDto commentDto, @PathVariable Integer commentId) {
 		CommentDto comment = this.commentService.updateComment(commentDto, commentId);
 		return new ResponseEntity<CommentDto>(comment, HttpStatus.OK);

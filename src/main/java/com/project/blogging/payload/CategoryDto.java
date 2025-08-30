@@ -11,6 +11,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CategoryDto {
 	
+	private Integer categoryId;
+	
 	@NotEmpty
 	@Size(min=3,max=10, message="category name must be min of 3 characters and max of 10 characters")
 	private String categoryName;

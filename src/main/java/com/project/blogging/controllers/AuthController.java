@@ -6,8 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +24,7 @@ import com.project.blogging.security.JwtTokenHelper;
 import com.project.blogging.services.UserService;
 
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 	
 	@Autowired
@@ -32,6 +35,7 @@ public class AuthController {
 	
 	@Autowired
 	private AuthenticationManager authenticationManager;
+	
 	
 	@Autowired
 	private UserService userService;
@@ -46,10 +50,10 @@ public class AuthController {
 
 		String token = this.jwtTokenHelper.generateToken(userDtails);
 
-		JwtAuthResponse response = new JwtAuthResponse();
+		JwtAuthResponse response = new JwtAuthResponse();;
 		response.setToken(token);
 
-		return new ResponseEntity<>(response, HttpStatus.OK);
+		return new ResponseEntity<JwtAuthResponse>(response, HttpStatus.OK);
 	}
 
 
@@ -74,6 +78,15 @@ public class AuthController {
 		UserDto registerDto = this.userService.registerNewUser(userDto);
 
 		return new ResponseEntity<>(registerDto, HttpStatus.CREATED);
+	}
+	
+	@GetMapping("/test")
+	public ResponseEntity<String> test() {
+	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	    System.out.println("Authenticated User: " + authentication.getName());
+	    System.out.println("User Authorities: " + authentication.getAuthorities());
+
+	    return ResponseEntity.ok("Access granted!");
 	}
 
 }

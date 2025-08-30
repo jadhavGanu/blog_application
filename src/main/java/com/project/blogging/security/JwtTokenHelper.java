@@ -16,12 +16,13 @@ import java.util.function.Function;
 
 import javax.crypto.SecretKey;
 
+// step two
 @Component
 public class JwtTokenHelper {
 
 //    private final String SECRET_KEY = "jwtTokenKey"; // Replace with your secret key
 	private static final SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-	private final long EXPIRATION_TIME = 1000 * 60 * 60; // 1 hour
+	private final long EXPIRATION_TIME = 1000 * 60 * 60 * 24;
 
 	// Extract username from token
 	public String extractUsername(String token) {
